@@ -4,76 +4,74 @@ import { AgGridReact } from 'ag-grid-react';
 
 import { mount } from 'enzyme';
 
-let component = null;
-let agGridReact = null;
 
-// const ensureGridApiHasBeenSet = (component) => {
-//   return new Promise(function (resolve, reject) {
-//     (function waitForGridReady() {
+describe('Testing a grid of rowModelType="serverSideRowModel"', () => {
 
-//       if (component.instance().api) {
-//         return resolve();
-//       }
+	let component = null;
 
-//       setTimeout(waitForGridReady, 10);
-//     })();
-//   });
-// };
+	beforeEach(() => {
+		// ignore license errors 
+		jest.spyOn(console, 'error').mockImplementation(() => { });
+		component = mount(<App />);
+	});
 
-beforeEach((done) => {
-  // ignore license errors 
-  jest.spyOn(console, 'error').mockImplementation(() => { });
+	afterEach(() => {
+		component.unmount();
+	})
 
-  // component = mount(<App />);
-  // agGridReact = component.find(AgGridReact).instance();
-  // ensureGridApiHasBeenSet(component).then(() => done());
-  done();
-});
+	it('renders rows when response is successful', (done) => {
+		function initSuccessData(params) {
+			console.log('initSuccessData');
 
-afterEach(() => {
-  component.unmount();
-  agGridReact = null;
+			let successDataSource = {
+				getRows: params => {
+					params.successCallback([dummyRow], 1);
+				}
+			}
+			component.find(AgGridReact).instance().api.setServerSideDatasource(successDataSource);
+		}
+
+		let dummyRow = [{ athlete: 'Ipsum Lorem Dolor' }];
+
+		component.instance().initializeData = jest.fn(initSuccessData);
+
+		component.update();
+
+		// component.instance().updateData();
+
+		setTimeout(() => {
+			let firstNode = component.instance().gridApi.getDisplayedRowAtIndex(0);
+			expect(firstNode.data.athlete).toEqual(dummyRow.athlete);
+			done();
+		}, 1000);
+	});
+
+	it('fails gracefully when response fails', (done) => {
+		function initFailData(params) {
+			console.log('initSuccessData');
+
+			let failDataSource = {
+				getRows: params => {
+					params.failCallback();
+				}
+			};
+			component.find(AgGridReact).instance().api.setServerSideDatasource(failDataSource);
+		}
+
+		let dummyRow = [{ athlete: 'Ipsum Lorem Dolor' }];
+
+		component.instance().initializeData = jest.fn(initFailData);
+
+		component.update();
+
+		// component.instance().updateData();
+
+		setTimeout(() => {
+			let pageStatus = component.instance().gridApi.getCacheBlockState()[0].pageStatus;
+			expect(pageStatus).toEqual('failed');
+			done();
+		}, 1000);
+
+	});
+
 })
-
-it('renders rows when response is successful', (done) => {
-
-  let dummyRow = [{
-    athlete: 'Michael Phelps',
-  }];
-
-  component = mount(<App />);
-
-  component.instance().initializeData = jest.fn(initData)
-
-  function initData(params) {
-    console.log('initData')
-    let successDataSource = {
-      getRows: params => {
-        params.successCallback([dummyRow], 1);
-      }
-    }
-    component.find(AgGridReact).instance().api.setServerSideDatasource(successDataSource);
-  }
-
-  component.update();
-
-  // component.instance().updateData();
-
-  setTimeout(() => {
-    let firstNode = component.instance().gridApi.getDisplayedRowAtIndex(0)
-    expect(firstNode.data.athlete).toEqual(dummyRow.athlete);
-    done();
-  }, 2000);
-
-});
-
-it('fails gracefully when response fails', () => {
-  component = mount(<App />);
-  // let failDataSource = {
-  //   getRows: params => {
-  //     params.failCallback();
-  //   }
-  // };
-
-  // params.api.setServerSideDatasource(failDataSource);
-});

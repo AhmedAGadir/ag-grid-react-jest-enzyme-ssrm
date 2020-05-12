@@ -42,10 +42,6 @@ export default class App extends Component {
 
     this.initializeData();
 
-    // setTimeout(() => {
-    //   var that = this;
-    //   debugger;
-    // }, 2000);
   };
 
   initializeData = () => {
@@ -104,7 +100,8 @@ function createServerSideDatasource(server) {
       var response = server.getData(params.request);
       setTimeout(function () {
         if (response.success) {
-          params.successCallback(response.rows, response.lastRow);
+          params.failCallback();
+          // params.successCallback(response.rows, response.lastRow);
         } else {
           params.failCallback();
         }
