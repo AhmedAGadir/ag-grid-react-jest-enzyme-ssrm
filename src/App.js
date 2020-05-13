@@ -5,6 +5,9 @@ import 'ag-grid-enterprise';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine-dark.css';
 
+import { createFakeServer } from './fakeServer';
+import { createServerSideDatasource } from './serverSideDatasource';
+
 export default class App extends Component {
   constructor(props) {
     super(props);
@@ -45,7 +48,6 @@ export default class App extends Component {
   };
 
   initializeData = () => {
-    console.log('initializeData')
     const httpRequest = new XMLHttpRequest();
     const updateData = data => {
       var fakeServer = createFakeServer(data);
@@ -91,38 +93,4 @@ export default class App extends Component {
       </div>
     );
   }
-}
-
-function createServerSideDatasource(server) {
-  return {
-    getRows: function (params) {
-      console.log('[Datasource] - rows requested by grid: ', params.request);
-      var response = server.getData(params.request);
-      setTimeout(function () {
-        if (response.success) {
-          params.successCallback(response.rows, response.lastRow);
-        } else {
-          params.failCallback();
-        }
-      }, 500);
-    },
-  };
-}
-function createFakeServer(allData) {
-  return {
-    getData: function (request) {
-      var requestedRows = allData.slice(request.startRow, request.endRow);
-      var lastRow = getLastRowIndex(request, requestedRows);
-      return {
-        success: true,
-        rows: requestedRows,
-        lastRow: lastRow,
-      };
-    },
-  };
-}
-function getLastRowIndex(request, results) {
-  if (!results) return undefined;
-  var currentLastRow = request.startRow + results.length;
-  return currentLastRow < request.endRow ? currentLastRow : undefined;
 }

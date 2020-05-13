@@ -5,7 +5,7 @@ import { AgGridReact } from 'ag-grid-react';
 import { mount } from 'enzyme';
 
 
-describe('Testing a grid of rowModelType="serverSideRowModel"', () => {
+describe('Testing a grid of rowModelType="serverSide"', () => {
 
 	let component = null;
 
@@ -19,21 +19,18 @@ describe('Testing a grid of rowModelType="serverSideRowModel"', () => {
 		component.unmount();
 	})
 
-	it('renders rows when response is successful', (done) => {
-		function initSuccessData(params) {
-			console.log('initSuccessData');
+	it('renders dummy row when response is successful', (done) => {
 
+		let dummyRow = [{ athlete: 'Ipsum Lorem Dolor' }];
+
+		component.instance().initializeData = jest.fn(params => {
 			let successDataSource = {
 				getRows: params => {
 					params.successCallback([dummyRow], 1);
 				}
 			}
 			component.find(AgGridReact).instance().api.setServerSideDatasource(successDataSource);
-		}
-
-		let dummyRow = [{ athlete: 'Ipsum Lorem Dolor' }];
-
-		component.instance().initializeData = jest.fn(initSuccessData);
+		});
 
 		component.update();
 
@@ -47,18 +44,15 @@ describe('Testing a grid of rowModelType="serverSideRowModel"', () => {
 	});
 
 	it('fails gracefully when response fails', (done) => {
-		function initFailData(params) {
-			console.log('initSuccessData');
 
+		component.instance().initializeData = jest.fn(params => {
 			let failDataSource = {
 				getRows: params => {
 					params.failCallback();
 				}
 			};
 			component.find(AgGridReact).instance().api.setServerSideDatasource(failDataSource);
-		}
-
-		component.instance().initializeData = jest.fn(initFailData);
+		});
 
 		component.update();
 
@@ -69,6 +63,8 @@ describe('Testing a grid of rowModelType="serverSideRowModel"', () => {
 			expect(pageStatus).toEqual('failed');
 			done();
 		}, 1000);
+
+
 
 	});
 
