@@ -58,8 +58,6 @@ describe('Testing a grid of rowModelType="serverSideRowModel"', () => {
 			component.find(AgGridReact).instance().api.setServerSideDatasource(failDataSource);
 		}
 
-		let dummyRow = [{ athlete: 'Ipsum Lorem Dolor' }];
-
 		component.instance().initializeData = jest.fn(initFailData);
 
 		component.update();

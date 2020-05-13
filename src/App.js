@@ -100,8 +100,7 @@ function createServerSideDatasource(server) {
       var response = server.getData(params.request);
       setTimeout(function () {
         if (response.success) {
-          params.failCallback();
-          // params.successCallback(response.rows, response.lastRow);
+          params.successCallback(response.rows, response.lastRow);
         } else {
           params.failCallback();
         }
