@@ -6,7 +6,6 @@ import { mount } from 'enzyme';
 
 
 describe('Testing a grid of rowModelType="serverSide"', () => {
-
 	let component = null;
 
 	beforeEach(() => {
@@ -20,7 +19,6 @@ describe('Testing a grid of rowModelType="serverSide"', () => {
 	})
 
 	it('renders dummy row when response is successful', (done) => {
-
 		let dummyRow = [{ athlete: 'Ipsum Lorem Dolor' }];
 
 		component.instance().initializeData = jest.fn(params => {
@@ -33,7 +31,6 @@ describe('Testing a grid of rowModelType="serverSide"', () => {
 		});
 
 		component.update();
-
 		// component.instance().updateData();
 
 		setTimeout(() => {
@@ -44,7 +41,6 @@ describe('Testing a grid of rowModelType="serverSide"', () => {
 	});
 
 	it('fails gracefully when response fails', (done) => {
-
 		component.instance().initializeData = jest.fn(params => {
 			let failDataSource = {
 				getRows: params => {
@@ -55,7 +51,6 @@ describe('Testing a grid of rowModelType="serverSide"', () => {
 		});
 
 		component.update();
-
 		// component.instance().updateData();
 
 		setTimeout(() => {
@@ -63,8 +58,6 @@ describe('Testing a grid of rowModelType="serverSide"', () => {
 			expect(pageStatus).toEqual('failed');
 			done();
 		}, 1000);
-
-
 
 	});
 
